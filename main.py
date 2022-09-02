@@ -1,96 +1,103 @@
-# @author ibryans
+# @author B. S. Oliveira
 # Uma simples engine de xadrez
-
-# T: Torre
-# C: Cavalo
-# B: Bispo
-# D: Dama
-# R: Rei
-# p: Peão
-
-
-A = 0
-B = 1
-C = 2
-D = 3
-E = 4
-F = 5
-G = 6
-H = 7
 
 # Criando o tabuleiro usando uma matriz
 board = [
-
-    # ['T','P','_','_','_','_','P','T'],
-    # ['C','P','_','_','_','_','P','C'],
-    # ['B','P','_','_','_','_','P','B'],
-    # ['T','P','_','_','_','_','P','T'],
-
-    ['T','C','B','D','R','B','C','T'],
-    ['P','P','P','P','P','P','P','P'],
-    ['_','_','_','_','_','_','_','_'],
-    ['_','_','_','_','_','_','_','_'],
-    ['_','_','_','_','_','_','_','_'],
-    ['_','_','_','_','_','_','_','_'],
-    ['P','P','P','P','P','P','P','P'],
-    ['T','C','B','D','R','B','C','T'],
+    ['T','P','-','-','-','-','P','T'],
+    ['C','P','-','-','-','-','P','C'],
+    ['B','P','-','-','-','-','P','B'],
+    ['D','P','B','-','-','-','P','D'],
+    ['R','P','-','P','-','-','P','R'],
+    ['B','P','C','-','-','-','P','B'],
+    ['C','P','-','-','-','-','P','C'],
+    ['T','P','-','-','-','-','P','T'],
 ]
 
-def get_position(x, y):
-    # print('Casa ' + row + column+1)
-    return board[x][y-1]
+# Retorna a casa da peça selecionada
+def get_square_position(coord_X, coord_Y):
+    position_dict = {
+        "0": "A",
+        "1": "B",
+        "2": "C",
+        "3": "D",
+        "4": "E",
+        "5": "F",
+        "6": "G",
+        "7": "H",
+    }
+    x = position_dict[str(coord_X)]
+    y = coord_Y+1
+    return (str(x) + str(y))
+
+# Retorna o nome da peça selecionada
+def get_piece_name(piece):
+    match piece:
+        case 'T': return 'Torre'
+        case 'C': return 'Cavalo'
+        case 'B': return 'Bispo'
+        case 'D': return 'Dama'
+        case 'R': return 'Rei'
+        case 'P': return 'Peão'
 
 
 
-def get_possible_destination(piece_coord_X, piece_coord_Y):
-    piece = board[piece_coord_X][piece_coord_Y]
+# Mostra os possíveis caminhos para a peça clicada
+# Parâmetros:
+#   coord_X: A - H
+#   coord_Y: 0 - 7
+def get_possible_destination(coord_X, coord_Y):
+    
+    # Se tiver selecionado uma casa vazia, não tem ação
+    if (board[coord_X][coord_Y] == '-'):
+        return
 
-    print(piece)
-    print()
+    piece = board[coord_X][coord_Y]
+    print('Peça selecionada: '
+        + str(get_piece_name(piece))
+        + ' '
+        + str(get_square_position(coord_X, coord_Y))
+        + '\n')
+        
 
     if (piece == 'P'):
 
-        # Mover 2 casas pra frente
-        if (piece_coord_Y == 1):
-            if (board[piece_coord_X][piece_coord_Y+2] == '_'):
-                board[piece_coord_X][piece_coord_Y+2] == 'O'
+        # Mover 1 casa pra frente
+        if (board[coord_X][coord_Y+1] == '-'):
+            board[coord_X][coord_Y+1] = '.'
 
-        # Mover pra frente
-        if (board[piece_coord_X][piece_coord_Y+1] == '_'):
-            board[piece_coord_X][piece_coord_Y+1] == 'O'
+        # Mover 2 casas pra frente
+        if (coord_Y == 1):
+            if (board[coord_X][coord_Y+1] == '.' and board[coord_X][coord_Y+2] == '-'):
+                board[coord_X][coord_Y+2] = '.'
 
         # Comer na diagonal direita
-        if ((piece_coord_X < 7 and piece_coord_Y < 7)):
-            if (board[piece_coord_X+1][piece_coord_Y+1] != '_'):
-                board[piece_coord_X+1][piece_coord_Y+1] ='('.join([
-                    board[piece_coord_X+1][piece_coord_Y+1],
-                    ')'
-                ])
+        if ((coord_X < 7 and coord_Y < 7)):
+            if (board[coord_X+1][coord_Y+1] != '-'):
+                board[coord_X+1][coord_Y+1] = 'X'
 
         # Comer na diagonal esquerda
-        if ((piece_coord_X > 0 and piece_coord_Y < 7)):
-            if (board[piece_coord_X-1][piece_coord_Y+1] != '_'):
-                board[piece_coord_X-1][piece_coord_Y+1] ='('.join([
-                    board[piece_coord_X-1][piece_coord_Y+1],
-                    ')'
-                ])
+        if ((coord_X > 0 and coord_Y < 7)):
+            if (board[coord_X-1][coord_Y+1] != '-'):
+                board[coord_X-1][coord_Y+1] = 'X'        
 
     if (piece == 'T'):
         # percorrendo a linha
         for square in range (0, 7, 1):
-            if (board[square][piece_coord_Y-1] == '_'):
-                board[square][piece_coord_Y-1] = 'O'
+            if (board[square][coord_Y-1] == '-'):
+                board[square][coord_Y-1] = '.'
         
         # percorrendo a coluna
         for square in range (0, 7, 1):
-            if (board[piece_coord_X][square] == '_'):
-                board[piece_coord_X][square] = 'O'
+            if (board[coord_X][square] == '-'):
+                board[coord_X][square] = '.'
 
     show_board()
 
 
 def show_board():
-    print('\n'.join([''.join(['{:4}'.format(item) for item in row]) 
-      for row in board]))
+    for y in range(7, -1, -1):
+        for x in range(0, 8, 1):
+            print(str(board[x][y]), end=' ')
+        print()
 
-get_possible_destination(G,0)
+get_possible_destination(1,1)
